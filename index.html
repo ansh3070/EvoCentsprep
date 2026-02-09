@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evo Centsprep | CENTS Entrance Notes</title>
+    <style>
+        /* --- 1. CORE VARIABLES & RESET --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #1e293b; /* Slate 800 */
+            --text-light: #64748b; /* Slate 500 */
+            --accent-color: #2563eb; /* Royal Blue */
+            --accent-hover: #1d4ed8;
+            --border-color: #e2e8f0;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.2s; }
+        button { cursor: pointer; border: none; font-family: inherit; }
+        ul { list-style: none; }
+
+        /* --- 2. LAYOUT & UTILITIES --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
+
+        .btn-outline {
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            background: transparent;
+        }
+        .btn-outline:hover { border-color: var(--text-main); background-color: #f8fafc; }
+
+        .btn-social {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #f1f5f9;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            border: 1px solid transparent;
+        }
+        .btn-social:hover { background: #e2e8f0; border-color: #cbd5e1; }
+
+        .section { padding: 60px 0; display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 3. HEADER (STICKY) --- */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
+        
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { font-size: 0.95rem; color: var(--text-light); font-weight: 500; }
+        .nav-links a:hover { color: var(--accent-color); }
+
+        /* --- 4. HOME PAGE --- */
+        .hero { text-align: center; padding: 80px 0 40px; }
+        .hero h1 { font-size: 2.8rem; letter-spacing: -1.5px; margin-bottom: 20px; line-height: 1.2; font-weight: 800; }
+        .hero p { color: var(--text-light); font-size: 1.15rem; max-width: 600px; margin: 0 auto 35px; }
+        .hero-buttons { display: flex; gap: 15px; justify-content: center; margin-bottom: 40px; }
+        
+        .info-note {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            max-width: 650px;
+            margin: 0 auto;
+            border-radius: 8px;
+            line-height: 1.7;
+        }
+
+        /* --- LATEST NOTES SECTION --- */
+        .latest-section { margin-top: 60px; padding-top: 40px; border-top: 1px solid var(--border-color); }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .section-title { font-size: 1.2rem; font-weight: 700; }
+        
+        .latest-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+        .mini-card {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            cursor: pointer;
+            background: white;
+        }
+        .mini-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.05); border-color: var(--accent-color); }
+        .mini-card .tag { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; color: var(--accent-color); margin-bottom: 8px; display: block; }
+        .mini-card h4 { font-size: 1rem; margin-bottom: 5px; }
+        .mini-card .date { font-size: 0.8rem; color: var(--text-light); }
+
+        /* --- 5. SUBJECTS GRID --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(0,0,0,0.06); }
+        .card h3 { margin-bottom: 12px; font-size: 1.3rem; }
+        .card p { font-size: 0.95rem; color: var(--text-light); margin-bottom: 25px; line-height: 1.6; }
+
+        /* --- 6. NOTES LIST --- */
+        .list-group { border: 1px solid var(--border-color); border-radius: 10px; overflow: hidden; background: white; }
+        .list-item {
+            padding: 20px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .list-item:last-child { border-bottom: none; }
+        .list-item:hover { background-color: #f8fafc; }
+        .list-item h5 { font-size: 1rem; font-weight: 600; }
+        .list-item .meta { font-size: 0.85rem; color: var(--text-light); margin-top: 4px; }
+
+        /* --- 7. NOTE CONTENT --- */
+        .note-header { margin-bottom: 40px; padding-bottom: 25px; border-bottom: 1px solid var(--border-color); }
+        .note-meta { font-size: 0.85rem; color: var(--accent-color); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+        .note-content h2 { font-size: 1.6rem; margin: 35px 0 20px; color: #0f172a; }
+        .note-content h3 { font-size: 1.3rem; margin: 25px 0 15px; }
+        .note-content p { margin-bottom: 18px; font-size: 1.05rem; line-height: 1.8; color: #334155; }
+        .note-content ul { list-style: disc; margin-left: 25px; margin-bottom: 25px; color: #334155; }
+        .note-content li { margin-bottom: 10px; padding-left: 5px; }
+        .note-content pre { background: #f1f5f9; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 25px 0; font-size: 0.9rem; border: 1px solid var(--border-color); }
+        .note-content blockquote { border-left: 4px solid var(--accent-color); padding-left: 20px; margin: 25px 0; font-style: italic; color: #475569; }
+
+        /* --- FOOTER --- */
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-top: auto;
+            background: #fff;
+        }
+        
+        /* Mobile Tweaks */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2rem; }
+            .nav-links { display: none; } /* Simplified for this demo */
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container">
+            <nav>
+                <a href="#home" class="logo" onclick="route('home')">Evo Centsprep</a>
+                <div class="nav-links">
+                    <a href="#home" onclick="route('home')">Home</a>
+                    <a href="#subjects" onclick="route('subjects')">Subjects</a>
+                    <a href="#about" onclick="route('about')">About</a>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div id="home" class="section active">
+        <div class="container">
+            <div class="hero">
+                <h1>Minimal, Structured Notes <br>for CENTS Preparation</h1>
+                <p>Day-wise, subject-wise notes created while preparing for the CENTS entrance exam. Focused on clarity, concepts, and exam-relevant practice.</p>
+                
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="route('subjects')">Browse Subjects</button>
+                    <button class="btn btn-outline" onclick="scrollToLatest()">Latest Notes</button>
+                </div>
+
+                <div class="info-note">
+                    These notes are based on my personal research and daily study. They are not official materials. If you find an error or have a correction, feedback is always welcome.
+                </div>
+            </div>
+
+            <div id="latest-anchor" class="latest-section">
+                <div class="section-header">
+                    <div class="section-title">✨ Just Uploaded</div>
+                    <a href="#" onclick="route('subjects')" style="font-size: 0.9rem; color: var(--accent-color);">View all →</a>
+                </div>
+                <div id="latest-grid" class="latest-grid"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="subjects" class="section">
+        <div class="container">
+            <h2 style="margin-bottom: 30px; font-size: 2rem;">Select a Subject</h2>
+            <div id="subjects-grid" class="grid">
+                </div>
+        </div>
+    </div>
+
+    <div id="subject-detail" class="section">
+        <div class="container">
+            <button class="btn btn-outline" style="margin-bottom: 25px; padding: 6px 14px; font-size: 0.85rem;" onclick="route('subjects')">← Back to Subjects</button>
+            <h1 id="subject-title" style="margin-bottom: 10px;">Subject Name</h1>
+            <p id="subject-desc" style="color: var(--text-light); margin-bottom: 40px; max-width: 700px; line-height: 1.7;">Description goes here.</p>
+            
+            <div id="notes-list" class="list-group">
+                </div>
+        </div>
+    </div>
+
+    <div id="note-view" class="section">
+        <div class="container" style="max-width: 720px;">
+            <button class="btn btn-outline" style="margin-bottom: 25px; padding: 6px 14px; font-size: 0.85rem;" onclick="goBackToSubject()">← Back to List</button>
+            
+            <div class="note-header">
+                <div class="note-meta"><span id="note-subject">Physics</span> • <span id="note-day">Day 1</span></div>
+                <h1 id="note-title">Title of the Note</h1>
+                <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 8px;">Studied on: <span id="note-date">Oct 24, 2025</span></p>
+            </div>
+
+            <div id="note-body" class="note-content">
+                </div>
+
+            <div class="info-note" style="margin-top: 60px; text-align: center;">
+                <strong>Disclaimer:</strong> These notes are based on personal study. Errors are possible. Please report mistakes so they can be corrected.
+            </div>
+        </div>
+    </div>
+
+    <div id="about" class="section">
+        <div class="container" style="max-width: 680px;">
+            <h1 style="margin-bottom: 30px;">About Evo Centsprep</h1>
+            
+            <div style="font-size: 1.1rem; line-height: 1.8; color: var(--text-main);">
+                <p style="margin-bottom: 20px;">Hi, I’m the creator of Evo Centsprep.</p>
+                <p style="margin-bottom: 20px;">This website is a personal initiative to organize and share my daily preparation notes for the CENTS exam in a clean, structured, and easy-to-follow format.</p>
+                <p style="margin-bottom: 20px;">Since official CENTS resources and past papers are very limited, these notes are created using:</p>
+                <ul style="list-style: disc; margin-left: 20px; margin-bottom: 20px; color: var(--text-light);">
+                    <li>The official CENTS syllabus outline</li>
+                    <li>Overlap with TOLC-I style questions</li>
+                    <li>Concept-based study from standard resources</li>
+                </ul>
+                <p style="margin-bottom: 20px;">The goal is not to replace textbooks, but to provide clear explanations, exam-focused coverage, and simple examples.</p>
+            </div>
+
+            <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border-color);">
+                <h3>Connect & Feedback</h3>
+                <p style="color: var(--text-light); margin: 10px 0 20px;">Have a correction, question, or just want to discuss CENTS?</p>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a href="https://instagram.com/ansh__3070" target="_blank" class="btn-social">
+                        📸 Instagram (@ansh__3070)
+                    </a>
+                    <a href="https://www.reddit.com/r/CENTSprep/" target="_blank" class="btn-social">
+                        🤖 Join r/CENTSprep
+                    </a>
+                    <a href="mailto:ansh20bsp@gmail.com" class="btn-social">
+                        ✉️ Email Me
+                    </a>
+                </div>
+            </div>
+
+            <div class="info-note" style="margin-top: 40px;">
+                <strong>Disclaimer:</strong> Evo Centsprep is an independent, student-driven project. It is not affiliated with any university or official CENTS authority.
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p style="font-weight: 500; color: var(--text-main);">© 2026 Evo Centsprep. Educational use only.</p>
+            <p style="margin-top: 8px;">Built as a personal learning and sharing project.</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- DATA STORE ---
+        
+        const subjects = [
+            { 
+                id: 'physics', 
+                name: 'Physics', 
+                desc: 'Core concepts from mechanics, electricity, magnetism, and basic optics, focused on entrance-level understanding.' 
+            },
+            { 
+                id: 'chem', 
+                name: 'Chemistry', 
+                desc: 'Atomic structure, chemical bonding, organic basics, and physical chemistry concepts.' 
+            },
+            { 
+                id: 'maths', 
+                name: 'Mathematics', 
+                desc: 'Algebra, functions, geometry, statistics, and problem-solving aligned with the CENTS syllabus and TOLC-style questions.' 
+            },
+            { 
+                id: 'bio', 
+                name: 'Biology', 
+                desc: 'Key biological processes, genetics, and cell biology essentials for the entrance.' 
+            },
+            { 
+                id: 'logical', 
+                name: 'Logical Reasoning', 
+                desc: 'Pattern recognition, data interpretation, and critical thinking puzzles.' 
+            }
+        ];
+
+        // !!! TO ADD NEW NOTES, ADD TO THE TOP OF THIS LIST !!!
+        const notes = [
+            {
+                id: 101,
+                subjectId: 'physics',
+                day: 'Day 5',
+                title: 'Laws of Motion & Friction',
+                date: '2026-02-09',
+                preview: 'Newton’s three laws, Free Body Diagrams (FBD), and types of friction.',
+                content: `
+                    <p><strong>Newton's First Law (Law of Inertia):</strong> An object remains at rest or in uniform motion unless acted upon by an external force.</p>
+                    <h3>Friction</h3>
+                    <p>Friction opposes relative motion between surfaces.</p>
+                    <ul>
+                        <li><strong>Static Friction (fs):</strong> Self-adjusting force up to a limit (limiting friction).</li>
+                        <li><strong>Kinetic Friction (fk):</strong> Acts when body is sliding. Usually fk < fs(max).</li>
+                    </ul>
+                    <blockquote>Formula: f = μN (where μ is coefficient of friction, N is Normal force)</blockquote>
+                `
+            },
+            {
+                id: 102,
+                subjectId: 'maths',
+                day: 'Day 4',
+                title: 'Matrices & Determinants',
+                date: '2026-02-08',
+                preview: 'Types of matrices, operations, and finding the inverse.',
+                content: `<p>A matrix is a rectangular array of numbers...</p>`
+            },
+            {
+                id: 103,
+                subjectId: 'logical',
+                day: 'Day 2',
+                title: 'Number Series Patterns',
+                date: '2026-02-07',
+                preview: 'Identifying arithmetic, geometric, and mixed series patterns.',
+                content: `<p>Common patterns found in CENTS logic section...</p>`
+            },
+            {
+                id: 104,
+                subjectId: 'bio',
+                day: 'Day 1',
+                title: 'Cell Structure',
+                date: '2026-02-06',
+                preview: 'Prokaryotic vs Eukaryotic cells and organelles.',
+                content: `<p><strong>Mitochondria:</strong> Powerhouse of the cell.</p>`
+            }
+        ];
+
+        // --- ROUTING & FUNCTIONS ---
+
+        let currentSubjectId = null;
+
+        function route(pageId) {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            window.scrollTo(0,0);
+        }
+
+        function scrollToLatest() {
+            route('home');
+            document.getElementById('latest-anchor').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // 1. Render Subjects Grid
+        const grid = document.getElementById('subjects-grid');
+        subjects.forEach(sub => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <div>
+                    <h3>${sub.name}</h3>
+                    <p>${sub.desc}</p>
+                </div>
+                <button class="btn btn-primary" onclick="openSubject('${sub.id}')">Open Notes</button>
+            `;
+            grid.appendChild(card);
+        });
+
+        // 2. Render "Latest Notes" on Home Page (Auto Logic)
+        function renderLatestNotes() {
+            const latestContainer = document.getElementById('latest-grid');
+            const sortedNotes = [...notes].sort((a, b) => new Date(b.date) - new Date(a.date));
+            const recentNotes = sortedNotes.slice(0, 4);
+
+            latestContainer.innerHTML = ''; // Clear current
+            recentNotes.forEach(note => {
+                const subName = subjects.find(s => s.id === note.subjectId).name;
+                const el = document.createElement('div');
+                el.className = 'mini-card';
+                el.onclick = () => openNote(note.id);
+                el.innerHTML = `
+                    <span class="tag">${subName}</span>
+                    <h4>${note.title}</h4>
+                    <div class="date">${note.day} • ${note.preview}</div>
+                `;
+                latestContainer.appendChild(el);
+            });
+        }
+        renderLatestNotes(); // Run on load
+
+        // 3. Open Subject View
+        function openSubject(id) {
+            currentSubjectId = id;
+            const subject = subjects.find(s => s.id === id);
+            
+            document.getElementById('subject-title').innerText = subject.name;
+            document.getElementById('subject-desc').innerText = `These notes are organized day-wise, showing exactly what was studied each day for ${subject.name}.`;
+
+            const listContainer = document.getElementById('notes-list');
+            listContainer.innerHTML = '';
+            
+            const subjectNotes = notes.filter(n => n.subjectId === id);
+            
+            if(subjectNotes.length === 0) {
+                listContainer.innerHTML = '<div style="padding:30px; text-align:center; color:var(--text-light);">No notes uploaded for this subject yet.</div>';
+            } else {
+                subjectNotes.forEach(note => {
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    item.innerHTML = `
+                        <div>
+                            <h5>${note.day}: ${note.title}</h5>
+                            <div class="meta">${note.date} • ${note.preview}</div>
+                        </div>
+                        <span style="color:var(--accent-color); font-size:0.9rem;">Read →</span>
+                    `;
+                    item.onclick = () => openNote(note.id);
+                    listContainer.appendChild(item);
+                });
+            }
+            route('subject-detail');
+        }
+
+        // 4. Open Single Note View
+        function openNote(noteId) {
+            const note = notes.find(n => n.id === noteId);
+            const subject = subjects.find(s => s.id === note.subjectId);
+
+            document.getElementById('note-subject').innerText = subject.name;
+            document.getElementById('note-day').innerText = note.day;
+            document.getElementById('note-title').innerText = note.title;
+            document.getElementById('note-date').innerText = note.date;
+            document.getElementById('note-body').innerHTML = note.content;
+
+            route('note-view');
+        }
+
+        function goBackToSubject() {
+            if(currentSubjectId) openSubject(currentSubjectId);
+            else route('subjects');
+        }
+
+    </script>
+</body>
+</html>
