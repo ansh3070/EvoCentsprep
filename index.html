@@ -3,67 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Evo Centsprep</title>
+    <title>Evo Centsprep | CENTS Entrance Notes</title>
     <style>
-        /* CORE STYLES */
-        :root { --accent: #2563eb; --text: #1e293b; --bg: #ffffff; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
+        /* --- 1. CORE VARIABLES & RESET --- */
+        :root {
+            --bg-color: #ffffff;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border-color: #e2e8f0;
+            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* NAVBAR */
-        header { position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid #e2e8f0; z-index: 1000; }
-        nav { display: flex; justify-content: space-between; align-items: center; height: 60px; max-width: 800px; margin: 0 auto; padding: 0 20px; }
-        
-        .logo { font-weight: 800; font-size: 1.2rem; text-decoration: none; color: var(--text); }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        a { text-decoration: none; color: inherit; transition: 0.2s; }
+        button { cursor: pointer; border: none; font-family: inherit; }
+
+        /* --- 2. LAYOUT & UTILITIES --- */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section { padding: 40px 0; display: none; animation: fadeIn 0.4s ease; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* --- 3. NAVIGATION (MOBILE RESPONSIVE) --- */
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 65px;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .logo { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.5px; }
         
         /* Desktop Menu */
-        .nav-links { display: flex; gap: 20px; }
-        .nav-links a { text-decoration: none; color: #64748b; font-size: 0.95rem; font-weight: 500; }
-        .nav-links a.active { color: var(--accent); }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { font-size: 0.95rem; color: var(--text-light); font-weight: 500; }
+        .nav-links a:hover { color: var(--accent-color); }
 
         /* Mobile Hamburger */
-        .hamburger { display: none; font-size: 1.5rem; cursor: pointer; background: none; border: none; }
-        
-        /* MOBILE MENU STYLES */
+        .hamburger { display: none; font-size: 1.5rem; background: none; color: var(--text-main); }
+
+        /* Mobile Menu Panel */
         @media (max-width: 600px) {
             .nav-links {
                 display: none; /* Hidden by default */
                 position: absolute;
-                top: 60px; left: 0; right: 0;
+                top: 65px; left: 0; right: 0;
                 background: white;
                 flex-direction: column;
                 padding: 20px;
-                border-bottom: 1px solid #e2e8f0;
+                gap: 15px;
+                border-bottom: 1px solid var(--border-color);
                 box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+                text-align: center;
             }
             .nav-links.show { display: flex; }
             .hamburger { display: block; }
-            
-            /* Typography Fixes */
-            h1 { font-size: 2rem !important; }
-            .hero-buttons { flex-direction: column; }
-            .btn { width: 100%; text-align: center; }
         }
 
-        /* UTILITIES */
-        .container { max-width: 800px; margin: 0 auto; padding: 0 20px; }
-        .section { display: none; padding: 40px 0; animation: fadeIn 0.3s ease; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* BUTTONS */
-        .btn { display: inline-block; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: 0.2s; cursor: pointer; }
-        .btn-primary { background: var(--accent); color: white; border: none; }
-        .btn-outline { border: 1px solid #cbd5e1; color: var(--text); background: transparent; }
+        /* --- 4. COMPONENTS (Buttons, Cards) --- */
+        .btn {
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+        .btn-primary { background-color: var(--accent-color); color: white; }
+        .btn-primary:hover { background-color: var(--accent-hover); transform: translateY(-1px); }
         
-        /* CARDS & LISTS */
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-        .card { border: 1px solid #e2e8f0; padding: 25px; border-radius: 10px; background: white; }
-        .list-item { padding: 15px; border-bottom: 1px solid #e2e8f0; cursor: pointer; }
-        .list-item:hover { background: #f8fafc; }
+        .btn-outline { border: 1px solid var(--border-color); color: var(--text-main); background: transparent; }
+        .btn-outline:hover { border-color: var(--text-main); background-color: #f8fafc; }
 
-        /* NOTES CONTENT */
-        .note-content img { max-width: 100%; border-radius: 8px; }
-        .note-content pre { background: #f1f5f9; padding: 15px; overflow-x: auto; border-radius: 6px; }
+        .btn-social {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: #f1f5f9;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            margin-right: 8px;
+            margin-bottom: 8px;
+        }
+        .btn-social:hover { background: #e2e8f0; }
+
+        .info-note {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            border-radius: 8px;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        /* --- 5. HERO & HOME --- */
+        .hero { text-align: center; padding: 40px 0; }
+        .hero h1 { font-size: 2.5rem; letter-spacing: -1px; margin-bottom: 15px; line-height: 1.2; font-weight: 800; color: #0f172a; }
+        .hero p { color: var(--text-light); font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px; }
+        .hero-buttons { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+        /* Latest Notes Grid */
+        .latest-section { margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border-color); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; margin-top: 20px; }
+        
+        .card {
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .card:hover { transform: translateY(-3px); border-color: var(--accent-color); }
+        .card h3 { margin: 8px 0; font-size: 1.1rem; }
+        .card .tag { font-size: 0.75rem; font-weight: 700; color: var(--accent-color); text-transform: uppercase; }
+        .card p { font-size: 0.9rem; color: var(--text-light); }
+
+        /* --- 6. LISTS & CONTENT --- */
+        .list-item {
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+        .list-item:hover h4 { color: var(--accent-color); }
+        .list-item h4 { font-size: 1rem; margin-bottom: 4px; }
+        .list-item span { font-size: 0.85rem; color: var(--text-light); }
+
+        /* Note Content (Rich Text) */
+        .note-content img { max-width: 100%; border-radius: 8px; margin: 10px 0; }
+        .note-content pre { background: #f1f5f9; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.85rem; }
+        .note-content blockquote { border-left: 4px solid var(--accent-color); padding-left: 15px; color: #475569; font-style: italic; }
+
+        /* Mobile Typography adjustments */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 2rem; }
+            .hero p { font-size: 1rem; }
+            .btn { width: 100%; text-align: center; margin-bottom: 5px; }
+        }
     </style>
 </head>
 <body>
@@ -81,19 +192,25 @@
     </header>
 
     <div id="home" class="section active">
-        <div class="container" style="text-align: center; padding-top: 40px;">
-            <h1 style="font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 20px;">Minimal Notes for CENTS</h1>
-            <p style="color: #64748b; font-size: 1.1rem; max-width: 500px; margin: 0 auto 30px;">Day-wise, subject-wise notes. Focused on clarity.</p>
-            
-            <div class="hero-buttons" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 40px;">
-                <button class="btn btn-primary" onclick="route('subjects')">Browse Subjects</button>
-                <button class="btn btn-outline" onclick="scrollToLatest()">Latest Notes</button>
+        <div class="container">
+            <div class="hero">
+                <h1>Minimal, Structured Notes <br>for CENTS Preparation</h1>
+                <p>Day-wise, subject-wise notes created while preparing for the CENTS entrance exam. Focused on clarity, concepts, and exam-relevant practice.</p>
+                
+                <div class="hero-buttons">
+                    <button class="btn btn-primary" onclick="route('subjects')">Browse Subjects</button>
+                    <button class="btn btn-outline" onclick="scrollToLatest()">Latest Notes</button>
+                </div>
+
+                <div class="info-note">
+                    These notes are based on my personal research and daily study. They are not official materials. If you find an error or have a correction, feedback is always welcome.
+                </div>
             </div>
 
-            <div style="text-align: left; margin-top: 50px;">
-                <h3 style="font-size: 1.2rem;">✨ Just Uploaded</h3>
+            <div id="latest-anchor" class="latest-section">
+                <h3 style="font-size: 1.2rem; margin-bottom: 15px;">✨ Just Uploaded</h3>
                 <div id="latest-grid" class="grid">
-                    <p>Loading...</p>
+                    <p style="color:#94a3b8">Loading notes...</p>
                 </div>
             </div>
         </div>
@@ -101,39 +218,71 @@
 
     <div id="subjects" class="section">
         <div class="container">
-            <h2>Select Subject</h2>
-            <div id="subjects-grid" class="grid"></div>
+            <h2 style="margin-bottom: 20px;">Select a Subject</h2>
+            <div id="subjects-grid" class="grid">
+                </div>
         </div>
     </div>
 
     <div id="subject-detail" class="section">
         <div class="container">
-            <button class="btn btn-outline" onclick="route('subjects')" style="margin-bottom: 20px;">← Back</button>
-            <h1 id="subject-title">Subject</h1>
-            <p id="subject-desc" style="color: #64748b; margin-bottom: 30px;"></p>
-            <div id="notes-list" style="border: 1px solid #e2e8f0; border-radius: 8px;"></div>
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; margin-bottom: 15px;" onclick="route('subjects')">← Back to Subjects</button>
+            <h1 id="subject-title" style="margin-bottom: 5px;">Subject Name</h1>
+            <p id="subject-desc" style="color: var(--text-light); margin-bottom: 30px; font-size: 0.95rem;"></p>
+            
+            <div id="notes-list">
+                </div>
         </div>
     </div>
 
     <div id="note-view" class="section">
-        <div class="container">
-            <button class="btn btn-outline" onclick="goBackToSubject()" style="margin-bottom: 20px;">← Back</button>
-            <div style="border-bottom: 1px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px;">
-                <span id="note-meta" style="color: var(--accent); font-weight: 600; font-size: 0.9rem;"></span>
-                <h1 id="note-title" style="margin: 10px 0;"></h1>
-                <span id="note-date" style="color: #94a3b8; font-size: 0.9rem;"></span>
+        <div class="container" style="max-width: 720px;">
+            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.8rem; margin-bottom: 20px;" onclick="goBackToSubject()">← Back</button>
+            
+            <div style="border-bottom: 1px solid var(--border-color); padding-bottom: 20px; margin-bottom: 30px;">
+                <div style="font-size: 0.85rem; color: var(--accent-color); font-weight: 700; text-transform: uppercase;">
+                    <span id="note-subject">PHY</span> • <span id="note-day">Day 1</span>
+                </div>
+                <h1 id="note-title" style="margin-top: 5px; line-height: 1.3;">Title</h1>
+                <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 5px;">Studied on: <span id="note-date">...</span></p>
             </div>
-            <div id="note-body" class="note-content"></div>
+
+            <div id="note-body" class="note-content" style="font-size: 1.05rem;"></div>
+
+            <div class="info-note" style="text-align: center; font-size: 0.85rem;">
+                <strong>Disclaimer:</strong> These notes are based on personal study. Errors are possible. Please report mistakes.
+            </div>
         </div>
     </div>
 
     <div id="about" class="section">
-        <div class="container">
-            <h1>About</h1>
-            <p>Evo Centsprep is a personal initiative to share daily study notes for the CENTS exam.</p>
-            <div style="margin-top: 30px;">
-                <a href="https://instagram.com/ansh__3070" target="_blank" class="btn btn-outline" style="margin-right: 10px;">📸 Instagram</a>
-                <a href="mailto:ansh20bsp@gmail.com" class="btn btn-outline">✉️ Email</a>
+        <div class="container" style="max-width: 680px;">
+            <h1 style="margin-bottom: 20px;">About Evo Centsprep</h1>
+            
+            <div style="font-size: 1.05rem; line-height: 1.7; color: var(--text-main);">
+                <p style="margin-bottom: 15px;">Hi, I’m the creator of Evo Centsprep.</p>
+                <p style="margin-bottom: 15px;">This website is a personal initiative to organize and share my daily preparation notes for the CENTS exam in a clean, structured, and easy-to-follow format.</p>
+                <p style="margin-bottom: 15px;">Since official CENTS resources and past papers are very limited, these notes are created using:</p>
+                <ul style="list-style: disc; margin-left: 20px; margin-bottom: 20px; color: var(--text-light);">
+                    <li>The official CENTS syllabus outline</li>
+                    <li>Overlap with TOLC-I style questions</li>
+                    <li>Concept-based study from standard resources</li>
+                </ul>
+                <p>The goal is not to replace textbooks, but to provide clear explanations, exam-focused coverage, and simple examples.</p>
+            </div>
+
+            <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+                <h3>Connect & Feedback</h3>
+                <p style="color: var(--text-light); margin: 10px 0 20px;">Have a correction, question, or just want to discuss CENTS?</p>
+                <div>
+                    <a href="https://instagram.com/ansh__3070" target="_blank" class="btn-social">📸 Instagram</a>
+                    <a href="https://www.reddit.com/r/CENTSprep/" target="_blank" class="btn-social">🤖 Join r/CENTSprep</a>
+                    <a href="mailto:ansh20bsp@gmail.com" class="btn-social">✉️ Email Me</a>
+                </div>
+            </div>
+
+            <div class="info-note" style="margin-top: 30px;">
+                <strong>Disclaimer:</strong> Evo Centsprep is an independent, student-driven project. It is not affiliated with any university or official CENTS authority.
             </div>
         </div>
     </div>
@@ -142,6 +291,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // FIREBASE CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyBVnmRt1vLzJy9FRlrq2J9-4VdnC_RGXWM",
             authDomain: "centsprep.firebaseapp.com",
@@ -163,100 +313,125 @@
             { id: 'bio', name: 'Biology', desc: 'Genetics, Cell Biology, Physiology.' },
             { id: 'logical', name: 'Logical Reasoning', desc: 'Patterns, Logic, Data Interpretation.' }
         ];
+
         let notes = [];
         let currentSubId = null;
 
-        // HAMBURGER MENU TOGGLE
+        // --- MOBILE MENU LOGIC ---
         window.toggleMenu = () => {
             const menu = document.getElementById('menu');
             menu.classList.toggle('show');
         }
 
-        // ROUTING
-        window.route = (id) => {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+        // --- ROUTING SYSTEM ---
+        window.route = (pageId) => {
+            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
             window.scrollTo(0,0);
             document.getElementById('menu').classList.remove('show'); // Close menu on click
         }
 
         window.scrollToLatest = () => {
             window.route('home');
-            document.getElementById('latest-grid').scrollIntoView({behavior:'smooth'});
+            document.getElementById('latest-anchor').scrollIntoView({ behavior: 'smooth' });
         }
 
-        window.goBackToSubject = () => currentSubId ? window.openSubject(currentSubId) : window.route('subjects');
+        window.goBackToSubject = () => {
+            if(currentSubId) window.openSubject(currentSubId);
+            else window.route('subjects');
+        }
 
-        // LOGIC
-        async function init() {
+        // --- FETCH & RENDER LOGIC ---
+        async function fetchNotes() {
             try {
                 const q = query(collection(db, "notes"), orderBy("date", "desc"));
                 const snap = await getDocs(q);
                 notes = [];
-                snap.forEach(d => notes.push({id: d.id, ...d.data()}));
-                renderLatest();
-            } catch(e) {
-                console.error(e);
-                document.getElementById('latest-grid').innerHTML = 'Error loading notes. Check console.';
+                snap.forEach(doc => notes.push({ id: doc.id, ...doc.data() }));
+                renderLatestNotes();
+            } catch (error) {
+                console.error("Firebase Error:", error);
+                document.getElementById('latest-grid').innerHTML = '<p>Error loading notes. Did you update Rules?</p>';
             }
         }
-        init();
+        fetchNotes();
 
-        function renderLatest() {
-            const el = document.getElementById('latest-grid');
-            el.innerHTML = '';
-            if(!notes.length) return el.innerHTML = 'No notes yet.';
+        function renderLatestNotes() {
+            const container = document.getElementById('latest-grid');
+            container.innerHTML = '';
             
-            notes.slice(0,4).forEach(n => {
-                const sub = subjects.find(s=>s.id === n.subjectId)?.name || 'General';
+            if (notes.length === 0) {
+                container.innerHTML = '<p style="grid-column:1/-1; color:#94a3b8; text-align:center;">No notes found yet.</p>';
+                return;
+            }
+
+            notes.slice(0, 4).forEach(note => {
+                const subName = subjects.find(s => s.id === note.subjectId)?.name || 'General';
                 const div = document.createElement('div');
                 div.className = 'card';
-                div.onclick = () => window.openNote(n.id);
-                div.innerHTML = `<small style="color:var(--accent); font-weight:bold;">${sub}</small><h3>${n.title}</h3><p>${n.day}</p>`;
-                el.appendChild(div);
+                div.onclick = () => window.openNote(note.id);
+                div.innerHTML = `
+                    <span class="tag">${subName}</span>
+                    <h3>${note.title}</h3>
+                    <p>${note.day} • ${note.preview || 'Read note...'}</p>
+                `;
+                container.appendChild(div);
             });
         }
 
-        // RENDER SUBJECTS
+        // --- SUBJECTS GRID ---
         const sGrid = document.getElementById('subjects-grid');
-        subjects.forEach(s => {
-            const d = document.createElement('div');
-            d.className = 'card';
-            d.onclick = () => window.openSubject(s.id);
-            d.innerHTML = `<h3>${s.name}</h3><p>${s.desc}</p><span style="color:var(--accent)">Open →</span>`;
-            sGrid.appendChild(d);
+        subjects.forEach(sub => {
+            const div = document.createElement('div');
+            div.className = 'card';
+            div.onclick = () => window.openSubject(sub.id);
+            div.innerHTML = `
+                <h3 style="font-size:1.3rem;">${sub.name}</h3>
+                <p style="margin-bottom:15px;">${sub.desc}</p>
+                <span style="color:var(--accent-color); font-weight:600; font-size:0.9rem;">View Notes →</span>
+            `;
+            sGrid.appendChild(div);
         });
 
+        // --- OPEN FUNCTIONS ---
         window.openSubject = (id) => {
             currentSubId = id;
-            const sub = subjects.find(s=>s.id===id);
+            const sub = subjects.find(s => s.id === id);
             document.getElementById('subject-title').innerText = sub.name;
-            document.getElementById('subject-desc').innerText = sub.desc;
-            
+            document.getElementById('subject-desc').innerText = `Day-wise notes for ${sub.name}.`;
+
             const list = document.getElementById('notes-list');
             list.innerHTML = '';
+            
             const subNotes = notes.filter(n => n.subjectId === id);
             
-            if(!subNotes.length) list.innerHTML = '<div style="padding:20px;">No notes found.</div>';
-            else {
-                subNotes.forEach(n => {
-                    const row = document.createElement('div');
-                    row.className = 'list-item';
-                    row.onclick = () => window.openNote(n.id);
-                    row.innerHTML = `<b>${n.day}: ${n.title}</b><br><small style="color:#94a3b8">${n.date}</small>`;
-                    list.appendChild(row);
+            if (subNotes.length === 0) {
+                list.innerHTML = '<div style="padding:20px; color:#94a3b8; text-align:center;">No notes yet.</div>';
+            } else {
+                subNotes.forEach(note => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.onclick = () => window.openNote(note.id);
+                    div.innerHTML = `
+                        <h4>${note.day}: ${note.title}</h4>
+                        <span>${note.date} • ${note.preview || 'Read more'}</span>
+                    `;
+                    list.appendChild(div);
                 });
             }
             window.route('subject-detail');
         }
 
-        window.openNote = (id) => {
-            const n = notes.find(x => x.id === id);
-            const sub = subjects.find(s => s.id === n.subjectId);
-            document.getElementById('note-meta').innerText = `${sub.name} • ${n.day}`;
-            document.getElementById('note-title').innerText = n.title;
-            document.getElementById('note-date').innerText = n.date;
-            document.getElementById('note-body').innerHTML = n.content;
+        window.openNote = (noteId) => {
+            const note = notes.find(n => n.id === noteId);
+            const sub = subjects.find(s => s.id === note.subjectId);
+
+            document.getElementById('note-subject').innerText = sub ? sub.name : 'Note';
+            document.getElementById('note-day').innerText = note.day;
+            document.getElementById('note-title').innerText = note.title;
+            document.getElementById('note-date').innerText = note.date;
+            document.getElementById('note-body').innerHTML = note.content;
+
             window.route('note-view');
         }
     </script>
