@@ -185,13 +185,15 @@
         /* --- 7. NOTE CONTENT --- */
         .note-header { margin-bottom: 40px; padding-bottom: 25px; border-bottom: 1px solid var(--border-color); }
         .note-meta { font-size: 0.85rem; color: var(--accent-color); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
-        .note-content h2 { font-size: 1.6rem; margin: 35px 0 20px; color: #0f172a; }
-        .note-content h3 { font-size: 1.3rem; margin: 25px 0 15px; }
-        .note-content p { margin-bottom: 18px; font-size: 1.05rem; line-height: 1.8; color: #334155; }
-        .note-content ul { list-style: disc; margin-left: 25px; margin-bottom: 25px; color: #334155; }
-        .note-content li { margin-bottom: 10px; padding-left: 5px; }
-        .note-content pre { background: #f1f5f9; padding: 20px; border-radius: 8px; overflow-x: auto; margin: 25px 0; font-size: 0.9rem; border: 1px solid var(--border-color); }
-        .note-content blockquote { border-left: 4px solid var(--accent-color); padding-left: 20px; margin: 25px 0; font-style: italic; color: #475569; }
+        
+        /* Note Content Styles (Rich Text) */
+        .note-content h1, .note-content h2, .note-content h3 { color: #0f172a; margin-top: 1.5em; margin-bottom: 0.5em; }
+        .note-content p { margin-bottom: 1em; font-size: 1.05rem; line-height: 1.8; color: #334155; }
+        .note-content ul, .note-content ol { margin-left: 20px; margin-bottom: 1em; color: #334155; }
+        .note-content li { margin-bottom: 0.5em; }
+        .note-content pre { background: #f1f5f9; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 1em 0; font-size: 0.9rem; border: 1px solid var(--border-color); }
+        .note-content blockquote { border-left: 4px solid var(--accent-color); padding-left: 15px; margin: 1.5em 0; font-style: italic; color: #475569; }
+        .note-content img { max-width: 100%; border-radius: 8px; margin: 1em 0; }
 
         /* --- FOOTER --- */
         footer {
@@ -247,7 +249,9 @@
                     <div class="section-title">✨ Just Uploaded</div>
                     <a href="#" onclick="route('subjects')" style="font-size: 0.9rem; color: var(--accent-color);">View all →</a>
                 </div>
-                <div id="latest-grid" class="latest-grid"></div>
+                <div id="latest-grid" class="latest-grid">
+                    <p style="color:#94a3b8">Loading latest notes...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -281,8 +285,7 @@
                 <p style="color: var(--text-light); font-size: 0.9rem; margin-top: 8px;">Studied on: <span id="note-date">Oct 24, 2025</span></p>
             </div>
 
-            <div id="note-body" class="note-content">
-                </div>
+            <div id="note-body" class="note-content"></div>
 
             <div class="info-note" style="margin-top: 60px; text-align: center;">
                 <strong>Disclaimer:</strong> These notes are based on personal study. Errors are possible. Please report mistakes so they can be corrected.
@@ -335,102 +338,75 @@
         </div>
     </footer>
 
-    <script>
-        // --- DATA STORE ---
-        
+    <script type="module">
+        // 1. IMPORT FIREBASE
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // 2. CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVnmRt1vLzJy9FRlrq2J9-4VdnC_RGXWM",
+            authDomain: "centsprep.firebaseapp.com",
+            projectId: "centsprep",
+            storageBucket: "centsprep.firebasestorage.app",
+            messagingSenderId: "747487498628",
+            appId: "1:747487498628:web:0ee15720e248cd30a04dd1",
+            measurementId: "G-CNXRHV0P33"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 3. DATA VARIABLES
         const subjects = [
-            { 
-                id: 'physics', 
-                name: 'Physics', 
-                desc: 'Core concepts from mechanics, electricity, magnetism, and basic optics, focused on entrance-level understanding.' 
-            },
-            { 
-                id: 'chem', 
-                name: 'Chemistry', 
-                desc: 'Atomic structure, chemical bonding, organic basics, and physical chemistry concepts.' 
-            },
-            { 
-                id: 'maths', 
-                name: 'Mathematics', 
-                desc: 'Algebra, functions, geometry, statistics, and problem-solving aligned with the CENTS syllabus and TOLC-style questions.' 
-            },
-            { 
-                id: 'bio', 
-                name: 'Biology', 
-                desc: 'Key biological processes, genetics, and cell biology essentials for the entrance.' 
-            },
-            { 
-                id: 'logical', 
-                name: 'Logical Reasoning', 
-                desc: 'Pattern recognition, data interpretation, and critical thinking puzzles.' 
-            }
+            { id: 'physics', name: 'Physics', desc: 'Core concepts from mechanics, electricity, magnetism, and basic optics.' },
+            { id: 'chem', name: 'Chemistry', desc: 'Atomic structure, chemical bonding, organic basics, and physical chemistry.' },
+            { id: 'maths', name: 'Mathematics', desc: 'Algebra, functions, geometry, statistics, and problem-solving.' },
+            { id: 'bio', name: 'Biology', desc: 'Key biological processes, genetics, and cell biology essentials.' },
+            { id: 'logical', name: 'Logical Reasoning', desc: 'Pattern recognition, data interpretation, and critical thinking.' }
         ];
 
-        // !!! TO ADD NEW NOTES, ADD TO THE TOP OF THIS LIST !!!
-        const notes = [
-            {
-                id: 101,
-                subjectId: 'physics',
-                day: 'Day 5',
-                title: 'Laws of Motion & Friction',
-                date: '2026-02-09',
-                preview: 'Newton’s three laws, Free Body Diagrams (FBD), and types of friction.',
-                content: `
-                    <p><strong>Newton's First Law (Law of Inertia):</strong> An object remains at rest or in uniform motion unless acted upon by an external force.</p>
-                    <h3>Friction</h3>
-                    <p>Friction opposes relative motion between surfaces.</p>
-                    <ul>
-                        <li><strong>Static Friction (fs):</strong> Self-adjusting force up to a limit (limiting friction).</li>
-                        <li><strong>Kinetic Friction (fk):</strong> Acts when body is sliding. Usually fk < fs(max).</li>
-                    </ul>
-                    <blockquote>Formula: f = μN (where μ is coefficient of friction, N is Normal force)</blockquote>
-                `
-            },
-            {
-                id: 102,
-                subjectId: 'maths',
-                day: 'Day 4',
-                title: 'Matrices & Determinants',
-                date: '2026-02-08',
-                preview: 'Types of matrices, operations, and finding the inverse.',
-                content: `<p>A matrix is a rectangular array of numbers...</p>`
-            },
-            {
-                id: 103,
-                subjectId: 'logical',
-                day: 'Day 2',
-                title: 'Number Series Patterns',
-                date: '2026-02-07',
-                preview: 'Identifying arithmetic, geometric, and mixed series patterns.',
-                content: `<p>Common patterns found in CENTS logic section...</p>`
-            },
-            {
-                id: 104,
-                subjectId: 'bio',
-                day: 'Day 1',
-                title: 'Cell Structure',
-                date: '2026-02-06',
-                preview: 'Prokaryotic vs Eukaryotic cells and organelles.',
-                content: `<p><strong>Mitochondria:</strong> Powerhouse of the cell.</p>`
-            }
-        ];
-
-        // --- ROUTING & FUNCTIONS ---
-
+        let notes = []; // Will be filled from Firebase
         let currentSubjectId = null;
 
-        function route(pageId) {
+        // 4. FETCH DATA
+        async function fetchNotes() {
+            try {
+                // Fetch all notes (sorted by date)
+                const q = query(collection(db, "notes"), orderBy("date", "desc")); 
+                const querySnapshot = await getDocs(q);
+                
+                notes = [];
+                querySnapshot.forEach((doc) => {
+                    notes.push({ id: doc.id, ...doc.data() });
+                });
+
+                renderLatestNotes();
+            } catch (error) {
+                console.error("Error fetching notes:", error);
+                document.getElementById('latest-grid').innerHTML = '<div style="grid-column:1/-1; text-align:center; color:red;">Could not load notes. Check console.</div>';
+            }
+        }
+
+        // Call fetch immediately
+        fetchNotes();
+
+        // --- GLOBAL FUNCTIONS EXPORT ---
+        // (Because modules have their own scope, we attach these to 'window' so onclick="..." works)
+        
+        window.route = function(pageId) {
             document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            const target = document.getElementById(pageId);
+            if(target) target.classList.add('active');
             window.scrollTo(0,0);
         }
 
-        function scrollToLatest() {
-            route('home');
+        window.scrollToLatest = function() {
+            window.route('home');
             document.getElementById('latest-anchor').scrollIntoView({ behavior: 'smooth' });
         }
 
-        // 1. Render Subjects Grid
+        // 5. RENDER SUBJECTS GRID
         const grid = document.getElementById('subjects-grid');
         subjects.forEach(sub => {
             const card = document.createElement('div');
@@ -440,23 +416,30 @@
                     <h3>${sub.name}</h3>
                     <p>${sub.desc}</p>
                 </div>
-                <button class="btn btn-primary" onclick="openSubject('${sub.id}')">Open Notes</button>
+                <button class="btn btn-primary" onclick="window.openSubject('${sub.id}')">Open Notes</button>
             `;
             grid.appendChild(card);
         });
 
-        // 2. Render "Latest Notes" on Home Page (Auto Logic)
+        // 6. RENDER LATEST NOTES
         function renderLatestNotes() {
             const latestContainer = document.getElementById('latest-grid');
-            const sortedNotes = [...notes].sort((a, b) => new Date(b.date) - new Date(a.date));
-            const recentNotes = sortedNotes.slice(0, 4);
+            latestContainer.innerHTML = ''; 
 
-            latestContainer.innerHTML = ''; // Clear current
+            const recentNotes = notes.slice(0, 4); 
+
+            if (recentNotes.length === 0) {
+                latestContainer.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#64748b; padding:20px;">No notes found yet.<br>Use Admin Panel to add your first note!</div>';
+                return;
+            }
+
             recentNotes.forEach(note => {
-                const subName = subjects.find(s => s.id === note.subjectId).name;
+                const subObj = subjects.find(s => s.id === note.subjectId);
+                const subName = subObj ? subObj.name : 'General';
+                
                 const el = document.createElement('div');
                 el.className = 'mini-card';
-                el.onclick = () => openNote(note.id);
+                el.onclick = () => window.openNote(note.id);
                 el.innerHTML = `
                     <span class="tag">${subName}</span>
                     <h4>${note.title}</h4>
@@ -465,23 +448,23 @@
                 latestContainer.appendChild(el);
             });
         }
-        renderLatestNotes(); // Run on load
 
-        // 3. Open Subject View
-        function openSubject(id) {
+        // 7. OPEN SUBJECT
+        window.openSubject = function(id) {
             currentSubjectId = id;
             const subject = subjects.find(s => s.id === id);
             
             document.getElementById('subject-title').innerText = subject.name;
-            document.getElementById('subject-desc').innerText = `These notes are organized day-wise, showing exactly what was studied each day for ${subject.name}.`;
+            document.getElementById('subject-desc').innerText = `Day-wise study notes for ${subject.name}.`;
 
             const listContainer = document.getElementById('notes-list');
             listContainer.innerHTML = '';
             
+            // Filter notes for this subject
             const subjectNotes = notes.filter(n => n.subjectId === id);
             
             if(subjectNotes.length === 0) {
-                listContainer.innerHTML = '<div style="padding:30px; text-align:center; color:var(--text-light);">No notes uploaded for this subject yet.</div>';
+                listContainer.innerHTML = '<div style="padding:40px; text-align:center; color:var(--text-light);">No notes uploaded for this subject yet.</div>';
             } else {
                 subjectNotes.forEach(note => {
                     const item = document.createElement('div');
@@ -493,32 +476,33 @@
                         </div>
                         <span style="color:var(--accent-color); font-size:0.9rem;">Read →</span>
                     `;
-                    item.onclick = () => openNote(note.id);
+                    item.onclick = () => window.openNote(note.id);
                     listContainer.appendChild(item);
                 });
             }
-            route('subject-detail');
+            window.route('subject-detail');
         }
 
-        // 4. Open Single Note View
-        function openNote(noteId) {
+        // 8. OPEN NOTE
+        window.openNote = function(noteId) {
             const note = notes.find(n => n.id === noteId);
             const subject = subjects.find(s => s.id === note.subjectId);
 
-            document.getElementById('note-subject').innerText = subject.name;
+            document.getElementById('note-subject').innerText = subject ? subject.name : 'Note';
             document.getElementById('note-day').innerText = note.day;
             document.getElementById('note-title').innerText = note.title;
             document.getElementById('note-date').innerText = note.date;
+            
+            // Inject HTML content from Quill Editor (stored in Firebase)
             document.getElementById('note-body').innerHTML = note.content;
 
-            route('note-view');
+            window.route('note-view');
         }
 
-        function goBackToSubject() {
-            if(currentSubjectId) openSubject(currentSubjectId);
-            else route('subjects');
+        window.goBackToSubject = function() {
+            if(currentSubjectId) window.openSubject(currentSubjectId);
+            else window.route('subjects');
         }
-
     </script>
 </body>
 </html>
