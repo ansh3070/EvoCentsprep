@@ -2,57 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Panel | Evo Centsprep</title>
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <style>
         :root { --font: 'Inter', sans-serif; --accent: #2563eb; --bg: #f8fafc; }
-        body { font-family: var(--font); background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        body { font-family: var(--font); background: var(--bg); margin: 0; padding: 15px; color: #1e293b; -webkit-tap-highlight-color: transparent; }
         
-        .container { max-width: 800px; margin: 40px auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h1 { margin-top: 0; color: #0f172a; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        /* Login Form */
-        #login-section { text-align: center; margin-top: 50px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0 20px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 1rem; }
+        /* Mobile Header */
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; }
+        h1 { margin: 0; font-size: 1.3rem; color: #0f172a; }
+        .user-badge { font-size: 0.75rem; color: #64748b; display: block; margin-top: 4px; }
         
-        label { font-weight: 600; font-size: 0.9rem; display: block; margin-top: 15px; color: #475569; }
+        /* Form Elements */
+        label { font-weight: 600; font-size: 0.9rem; display: block; margin-top: 15px; margin-bottom: 5px; color: #475569; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 16px; /* Prevents zoom on iPhone */ background: #fff; }
         
-        button { background: var(--accent); color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; width: 100%; transition: 0.2s; font-weight: 600; }
-        button:hover { opacity: 0.9; }
-        button.secondary { background: #fee2e2; color: #ef4444; margin-top: 10px; }
-        button.secondary:hover { background: #fecaca; }
+        /* Mobile-Friendly Editor */
+        #editor-container { height: 300px; margin-bottom: 20px; background: white; font-size: 16px; }
+        .ql-toolbar { border-radius: 8px 8px 0 0; }
+        .ql-container { border-radius: 0 0 8px 8px; }
+        
+        /* Buttons */
+        button { background: var(--accent); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; width: 100%; margin-top: 10px; cursor: pointer; }
+        button:active { transform: scale(0.98); opacity: 0.9; }
+        button.logout-btn { background: #fee2e2; color: #ef4444; width: auto; padding: 8px 16px; font-size: 0.85rem; margin: 0; }
 
-        /* Editor Height */
-        #editor-container { height: 350px; margin-bottom: 20px; background: white; }
-        
-        .hidden { display: none; }
+        /* Login Screen */
+        #login-section { text-align: center; padding: 40px 10px; }
         .success { background: #dcfce7; color: #166534; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; text-align: center; }
         .error { color: #ef4444; margin-top: 10px; font-size: 0.9rem; }
+        .hidden { display: none; }
+
+        /* Row for Date/Day */
+        .flex-row { display: flex; gap: 15px; }
+        .flex-row > div { flex: 1; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div id="login-section">
-            <h1>Admin Login</h1>
-            <p style="color: #64748b; margin-bottom: 20px;">Please sign in to manage notes.</p>
-            <input type="email" id="email" placeholder="Email (ansh20bsp@gmail.com)">
+            <h1 style="font-size: 1.8rem; margin-bottom: 10px;">Welcome Back</h1>
+            <p style="color: #64748b; margin-bottom: 30px;">Sign in to upload notes.</p>
+            <input type="email" id="email" placeholder="Email" value="ansh20bsp@gmail.com">
             <input type="password" id="password" placeholder="Password">
             <button onclick="login()">Log In</button>
             <p id="login-error" class="error"></p>
         </div>
 
         <div id="dashboard-section" class="hidden">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:30px; padding-bottom: 20px; border-bottom: 1px solid #e2e8f0;">
+            <div class="header-row">
                 <div>
-                    <h1 style="margin:0; font-size: 1.5rem;">Add New Note</h1>
-                    <span style="font-size: 0.85rem; color: #64748b;" id="user-display"></span>
+                    <h1>New Note</h1>
+                    <span class="user-badge" id="user-display"></span>
                 </div>
-                <button onclick="logout()" class="secondary" style="width:auto; padding: 8px 16px; font-size: 0.85rem;">Logout</button>
+                <button onclick="logout()" class="logout-btn">Logout</button>
             </div>
 
-            <p class="success" id="success-msg">✅ Note published successfully!</p>
+            <p class="success" id="success-msg">✅ Note published!</p>
 
             <label>Subject</label>
             <select id="subjectId">
@@ -63,22 +73,22 @@
                 <option value="logical">Logical Reasoning</option>
             </select>
 
-            <div style="display: flex; gap: 20px;">
-                <div style="flex:1">
-                    <label>Day Number</label>
-                    <input type="text" id="day" placeholder="e.g. Day 5">
+            <div class="flex-row">
+                <div>
+                    <label>Day</label>
+                    <input type="text" id="day" placeholder="Day #">
                 </div>
-                <div style="flex:1">
-                    <label>Date Studied</label>
+                <div>
+                    <label>Date</label>
                     <input type="date" id="date">
                 </div>
             </div>
 
             <label>Title</label>
-            <input type="text" id="title" placeholder="e.g. Laws of Motion">
+            <input type="text" id="title" placeholder="Topic Title">
 
-            <label>Short Preview (One sentence)</label>
-            <input type="text" id="preview" placeholder="e.g. Newton's laws and friction types.">
+            <label>Preview Text</label>
+            <input type="text" id="preview" placeholder="Short summary...">
 
             <label>Content</label>
             <div id="editor-container"></div>
@@ -88,13 +98,11 @@
     </div>
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // YOUR CONFIG
         const firebaseConfig = {
             apiKey: "AIzaSyBVnmRt1vLzJy9FRlrq2J9-4VdnC_RGXWM",
             authDomain: "centsprep.firebaseapp.com",
@@ -105,81 +113,52 @@
             measurementId: "G-CNXRHV0P33"
         };
 
-        // Initialize
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Setup Quill Editor
+        // Mobile-friendly Toolbar
         var quill = new Quill('#editor-container', {
             theme: 'snow',
-            placeholder: 'Write your study notes here...',
+            placeholder: 'Type notes here...',
             modules: {
                 toolbar: [
                     [{ 'header': [2, 3, false] }],
-                    ['bold', 'italic', 'underline', 'strike'],
-                    [{ 'color': [] }, { 'background': [] }],
+                    ['bold', 'italic', 'underline'],
                     [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    ['blockquote', 'code-block'],
-                    ['link', 'image', 'video'],
-                    ['clean']
+                    ['image']
                 ]
             }
         });
 
-        // AUTH STATE LISTENER
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Optional: Check if it's YOU
-                if(user.email !== "ansh20bsp@gmail.com") {
-                    alert("Unauthorized access.");
-                    signOut(auth);
-                    return;
-                }
-                
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
-                document.getElementById('user-display').innerText = "Logged in as: " + user.email;
+                document.getElementById('user-display').innerText = user.email;
             } else {
                 document.getElementById('login-section').classList.remove('hidden');
                 document.getElementById('dashboard-section').classList.add('hidden');
             }
         });
 
-        // LOGIN FUNCTION (Attached to Window for HTML access)
         window.login = () => {
             const e = document.getElementById('email').value;
             const p = document.getElementById('password').value;
-            
-            document.getElementById('login-error').innerText = "Logging in...";
-            
-            signInWithEmailAndPassword(auth, e, p)
-                .catch((error) => {
-                    let msg = error.message;
-                    if(error.code === 'auth/invalid-credential') msg = "Wrong email or password.";
-                    document.getElementById('login-error').innerText = msg;
-                });
+            document.getElementById('login-error').innerText = "Verifying...";
+            signInWithEmailAndPassword(auth, e, p).catch(err => {
+                document.getElementById('login-error').innerText = "Login failed: " + err.message;
+            });
         }
 
-        // LOGOUT FUNCTION
-        window.logout = () => {
-            signOut(auth);
-        }
+        window.logout = () => signOut(auth);
 
-        // SAVE NOTE FUNCTION
         window.saveNote = async () => {
             const btn = document.getElementById('save-btn');
+            if(!document.getElementById('title').value) return alert("Title required!");
             
-            // Validation
-            if(!document.getElementById('title').value || !document.getElementById('date').value) {
-                alert("Please fill in at least the Title and Date.");
-                return;
-            }
-
             btn.innerText = "Publishing...";
             btn.disabled = true;
-
-            const contentHTML = quill.root.innerHTML;
 
             try {
                 await addDoc(collection(db, "notes"), {
@@ -188,27 +167,18 @@
                     title: document.getElementById('title').value,
                     date: document.getElementById('date').value, 
                     preview: document.getElementById('preview').value,
-                    content: contentHTML,
+                    content: quill.root.innerHTML,
                     createdAt: serverTimestamp()
                 });
-
-                document.getElementById('success-msg').style.display = 'block';
                 
-                // Reset form
+                document.getElementById('success-msg').style.display = 'block';
                 document.getElementById('title').value = "";
                 document.getElementById('preview').value = "";
-                // Don't reset Date/Subject/Day immediately as you might add multiple notes for same day
                 quill.setContents([]);
-                
-                setTimeout(() => {
-                     document.getElementById('success-msg').style.display = 'none';
-                }, 3000);
-
+                setTimeout(() => document.getElementById('success-msg').style.display = 'none', 3000);
             } catch (e) {
-                alert("Error adding note: " + e.message);
-                console.error(e);
+                alert("Error: " + e.message + "\nDid you fix the Firebase Rules?");
             }
-
             btn.innerText = "Publish Note";
             btn.disabled = false;
         }
