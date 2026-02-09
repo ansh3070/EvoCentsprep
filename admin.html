@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel | Evo Centsprep</title>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <style>
+        :root { --font: 'Inter', sans-serif; --accent: #2563eb; --bg: #f1f5f9; }
+        body { font-family: var(--font); background: var(--bg); margin: 0; padding: 20px; color: #1e293b; }
+        
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        h1 { margin-top: 0; }
+        
+        /* Login Form */
+        #login-section { text-align: center; margin-top: 50px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0 20px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; }
+        
+        label { font-weight: 600; font-size: 0.9rem; display: block; margin-top: 10px; }
+        
+        button { background: var(--accent); color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; width: 100%; }
+        button:hover { opacity: 0.9; }
+        button.secondary { background: #64748b; margin-top: 10px; }
+
+        /* Editor Height */
+        #editor-container { height: 300px; margin-bottom: 20px; }
+        
+        .hidden { display: none; }
+        .success { color: green; margin-bottom: 15px; display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="login-section">
+            <h1>Admin Login</h1>
+            <input type="email" id="email" placeholder="Email">
+            <input type="password" id="password" placeholder="Password">
+            <button onclick="login()">Log In</button>
+            <p id="login-error" style="color:red; margin-top:10px;"></p>
+        </div>
+
+        <div id="dashboard-section" class="hidden">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h1>Add New Note</h1>
+                <button onclick="logout()" style="width:auto; padding: 8px 16px; font-size: 0.8rem; background: #ef4444;">Logout</button>
+            </div>
+
+            <p class="success" id="success-msg">✅ Note published successfully!</p>
+
+            <label>Subject</label>
+            <select id="subjectId">
+                <option value="physics">Physics</option>
+                <option value="chem">Chemistry</option>
+                <option value="maths">Mathematics</option>
+                <option value="bio">Biology</option>
+                <option value="logical">Logical Reasoning</option>
+            </select>
+
+            <div style="display: flex; gap: 15px;">
+                <div style="flex:1">
+                    <label>Day Number</label>
+                    <input type="text" id="day" placeholder="e.g. Day 5">
+                </div>
+                <div style="flex:1">
+                    <label>Date Studied</label>
+                    <input type="date" id="date">
+                </div>
+            </div>
+
+            <label>Title</label>
+            <input type="text" id="title" placeholder="e.g. Laws of Motion">
+
+            <label>Short Preview (One sentence)</label>
+            <input type="text" id="preview" placeholder="e.g. Newton's laws and friction types.">
+
+            <label>Content</label>
+            <div id="editor-container"></div> <button onclick="saveNote()" id="save-btn">Publish Note</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // YOUR CONFIG
+        const firebaseConfig = {
+            apiKey: "AIzaSyBVnmRt1vLzJy9FRlrq2J9-4VdnC_RGXWM",
+            authDomain: "centsprep.firebaseapp.com",
+            projectId: "centsprep",
+            storageBucket: "centsprep.firebasestorage.app",
+            messagingSenderId: "747487498628",
+            appId: "1:747487498628:web:0ee15720e248cd30a04dd1",
+            measurementId: "G-CNXRHV0P33"
+        };
+
+        // Initialize
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Setup Quill Editor
+        var quill = new Quill('#editor-container', {
+            theme: 'snow',
+            modules: {
+                toolbar: [
+                    [{ 'header': [2, 3, false] }],
+                    ['bold', 'italic', 'underline'],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    ['blockquote', 'code-block'],
+                    ['link', 'image']
+                ]
+            }
+        });
+
+        // AUTH STATE LISTENER
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('login-section').classList.add('hidden');
+                document.getElementById('dashboard-section').classList.remove('hidden');
+            } else {
+                document.getElementById('login-section').classList.remove('hidden');
+                document.getElementById('dashboard-section').classList.add('hidden');
+            }
+        });
+
+        // LOGIN FUNCTION
+        window.login = () => {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('password').value;
+            signInWithEmailAndPassword(auth, e, p)
+                .catch((error) => {
+                    document.getElementById('login-error').innerText = "Error: " + error.message;
+                });
+        }
+
+        // LOGOUT FUNCTION
+        window.logout = () => {
+            signOut(auth);
+        }
+
+        // SAVE NOTE FUNCTION
+        window.saveNote = async () => {
+            const btn = document.getElementById('save-btn');
+            btn.innerText = "Publishing...";
+            btn.disabled = true;
+
+            const contentHTML = quill.root.innerHTML; // Get HTML from editor
+
+            try {
+                await addDoc(collection(db, "notes"), {
+                    subjectId: document.getElementById('subjectId').value,
+                    day: document.getElementById('day').value,
+                    title: document.getElementById('title').value,
+                    date: document.getElementById('date').value, // YYYY-MM-DD
+                    preview: document.getElementById('preview').value,
+                    content: contentHTML,
+                    createdAt: serverTimestamp()
+                });
+
+                document.getElementById('success-msg').style.display = 'block';
+                // Reset form
+                document.getElementById('title').value = "";
+                document.getElementById('preview').value = "";
+                quill.setContents([]);
+                
+                setTimeout(() => {
+                     document.getElementById('success-msg').style.display = 'none';
+                }, 3000);
+
+            } catch (e) {
+                alert("Error adding note: " + e.message);
+            }
+
+            btn.innerText = "Publish Note";
+            btn.disabled = false;
+        }
+    </script>
+</body>
+</html>
+
