@@ -11,32 +11,39 @@
         
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        /* Mobile Header */
+        /* HEADER STYLES (Restored) */
         .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px; }
         h1 { margin: 0; font-size: 1.3rem; color: #0f172a; }
-        .user-badge { font-size: 0.75rem; color: #64748b; display: block; margin-top: 4px; }
+        .user-badge { font-size: 0.75rem; color: #64748b; display: block; margin-top: 4px; font-weight: 500; }
         
-        /* Form Elements */
-        label { font-weight: 600; font-size: 0.9rem; display: block; margin-top: 15px; margin-bottom: 5px; color: #475569; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 16px; /* Prevents zoom on iPhone */ background: #fff; }
+        /* MODE SWITCHER */
+        .mode-switch { display: flex; gap: 10px; margin-bottom: 25px; background: #f1f5f9; padding: 5px; border-radius: 8px; }
+        .mode-btn { flex: 1; padding: 12px; text-align: center; cursor: pointer; border-radius: 6px; font-weight: 600; color: #64748b; transition: 0.2s; font-size: 0.9rem; }
+        .mode-btn.active { background: white; color: var(--accent); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+        /* FORM ELEMENTS */
+        input, select { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 8px; background: #fff; font-size: 16px; }
+        label { font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        /* Mobile-Friendly Editor */
+        /* EDITOR */
         #editor-container { height: 300px; margin-bottom: 20px; background: white; font-size: 16px; }
         .ql-toolbar { border-radius: 8px 8px 0 0; }
         .ql-container { border-radius: 0 0 8px 8px; }
         
-        /* Buttons */
-        button { background: var(--accent); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; width: 100%; margin-top: 10px; cursor: pointer; }
-        button:active { transform: scale(0.98); opacity: 0.9; }
-        button.logout-btn { background: #fee2e2; color: #ef4444; width: auto; padding: 8px 16px; font-size: 0.85rem; margin: 0; }
+        /* BUTTONS */
+        button { cursor: pointer; font-family: inherit; }
+        button.action-btn { background: var(--accent); color: white; padding: 14px; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; width: 100%; margin-top: 10px; }
+        button.action-btn:active { transform: scale(0.98); opacity: 0.9; }
+        
+        button.logout-btn { background: #fee2e2; color: #ef4444; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 500; }
 
-        /* Login Screen */
+        /* LOGIN SCREEN */
         #login-section { text-align: center; padding: 40px 10px; }
-        .success { background: #dcfce7; color: #166534; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; text-align: center; }
-        .error { color: #ef4444; margin-top: 10px; font-size: 0.9rem; }
         .hidden { display: none; }
+        .success { background: #dcfce7; color: #166534; padding: 15px; border-radius: 6px; margin-bottom: 20px; display: none; text-align: center; font-weight: 500; }
+        .error { color: #ef4444; margin-top: 10px; font-size: 0.9rem; }
 
-        /* Row for Date/Day */
+        /* UTILS */
         .flex-row { display: flex; gap: 15px; }
         .flex-row > div { flex: 1; }
     </style>
@@ -46,23 +53,28 @@
     <div class="container">
         <div id="login-section">
             <h1 style="font-size: 1.8rem; margin-bottom: 10px;">Welcome Back</h1>
-            <p style="color: #64748b; margin-bottom: 30px;">Sign in to upload notes.</p>
+            <p style="color: #64748b; margin-bottom: 30px;">Sign in to manage Evo Centsprep.</p>
             <input type="email" id="email" placeholder="Email" value="ansh20bsp@gmail.com">
             <input type="password" id="password" placeholder="Password">
-            <button onclick="login()">Log In</button>
+            <button class="action-btn" onclick="login()">Log In</button>
             <p id="login-error" class="error"></p>
         </div>
 
         <div id="dashboard-section" class="hidden">
             <div class="header-row">
                 <div>
-                    <h1>New Note</h1>
-                    <span class="user-badge" id="user-display"></span>
+                    <h1>Dashboard</h1>
+                    <span class="user-badge" id="user-display">Loading...</span>
                 </div>
                 <button onclick="logout()" class="logout-btn">Logout</button>
             </div>
 
-            <p class="success" id="success-msg">✅ Note published!</p>
+            <div class="mode-switch">
+                <div class="mode-btn active" onclick="setMode('note')" id="btn-note">📝 Post Note</div>
+                <div class="mode-btn" onclick="setMode('syllabus')" id="btn-syllabus">📚 Post Syllabus</div>
+            </div>
+
+            <p class="success" id="success-msg">✅ Saved successfully!</p>
 
             <label>Subject</label>
             <select id="subjectId">
@@ -73,27 +85,42 @@
                 <option value="logical">Logical Reasoning</option>
             </select>
 
-            <div class="flex-row">
-                <div>
-                    <label>Day</label>
-                    <input type="text" id="day" placeholder="Day #">
+            <div id="note-fields">
+                <div class="flex-row">
+                    <div>
+                        <label>Day Number</label>
+                        <input type="text" id="day" placeholder="e.g. Day 5">
+                    </div>
+                    <div>
+                        <label>Date Studied</label>
+                        <input type="date" id="date">
+                    </div>
                 </div>
-                <div>
-                    <label>Date</label>
-                    <input type="date" id="date">
+            </div>
+
+            <div id="syllabus-fields" class="hidden">
+                <div class="flex-row">
+                    <div>
+                        <label>Chapter No.</label>
+                        <input type="number" id="chapNo" placeholder="1">
+                    </div>
                 </div>
+                <label>YouTube Search Term (Optional)</label>
+                <input type="text" id="ytSearch" placeholder="e.g. Kinematics one shot physics">
             </div>
 
             <label>Title</label>
             <input type="text" id="title" placeholder="Topic Title">
 
-            <label>Preview Text</label>
-            <input type="text" id="preview" placeholder="Short summary...">
+            <div id="preview-field">
+                <label>Short Preview</label>
+                <input type="text" id="preview" placeholder="Brief summary for the list view...">
+            </div>
 
             <label>Content</label>
             <div id="editor-container"></div>
 
-            <button onclick="saveNote()" id="save-btn">Publish Note</button>
+            <button class="action-btn" onclick="saveData()" id="save-btn">Publish Note</button>
         </div>
     </div>
 
@@ -116,72 +143,118 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        let currentMode = 'note';
 
-        // Mobile-friendly Toolbar
+        // Editor Setup
         var quill = new Quill('#editor-container', {
             theme: 'snow',
-            placeholder: 'Type notes here...',
-            modules: {
-                toolbar: [
-                    [{ 'header': [2, 3, false] }],
-                    ['bold', 'italic', 'underline'],
-                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                    ['image']
-                ]
-            }
+            placeholder: 'Type content here...',
+            modules: { toolbar: [
+                [{ 'header': [2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                ['link', 'image', 'code-block']
+            ]}
         });
 
-        onAuthStateChanged(auth, (user) => {
+        // Mode Switching Logic
+        window.setMode = (mode) => {
+            currentMode = mode;
+            document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + mode).classList.add('active');
+            
+            if(mode === 'note') {
+                document.getElementById('note-fields').classList.remove('hidden');
+                document.getElementById('syllabus-fields').classList.add('hidden');
+                document.getElementById('preview-field').classList.remove('hidden');
+                document.getElementById('save-btn').innerText = "Publish Note";
+            } else {
+                document.getElementById('note-fields').classList.add('hidden');
+                document.getElementById('syllabus-fields').classList.remove('hidden');
+                document.getElementById('preview-field').classList.add('hidden');
+                document.getElementById('save-btn').innerText = "Publish Syllabus Chapter";
+            }
+        }
+
+        // Auth Logic
+        window.login = () => {
+            const e = document.getElementById('email').value;
+            const p = document.getElementById('password').value;
+            document.getElementById('login-error').innerText = "Verifying...";
+            signInWithEmailAndPassword(auth, e, p)
+                .catch(err => document.getElementById('login-error').innerText = err.message);
+        }
+
+        window.logout = () => signOut(auth);
+
+        onAuthStateChanged(auth, user => {
             if (user) {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
-                document.getElementById('user-display').innerText = user.email;
+                // RESTORED: Show user email
+                document.getElementById('user-display').innerText = "Logged in as: " + user.email;
             } else {
                 document.getElementById('login-section').classList.remove('hidden');
                 document.getElementById('dashboard-section').classList.add('hidden');
             }
         });
 
-        window.login = () => {
-            const e = document.getElementById('email').value;
-            const p = document.getElementById('password').value;
-            document.getElementById('login-error').innerText = "Verifying...";
-            signInWithEmailAndPassword(auth, e, p).catch(err => {
-                document.getElementById('login-error').innerText = "Login failed: " + err.message;
-            });
-        }
-
-        window.logout = () => signOut(auth);
-
-        window.saveNote = async () => {
+        // Save Logic
+        window.saveData = async () => {
             const btn = document.getElementById('save-btn');
-            if(!document.getElementById('title').value) return alert("Title required!");
             
-            btn.innerText = "Publishing...";
-            btn.disabled = true;
+            // Basic Validation
+            if(!document.getElementById('title').value) {
+                alert("Please enter a Title.");
+                return;
+            }
 
+            btn.disabled = true; 
+            btn.innerText = "Saving...";
+            
             try {
-                await addDoc(collection(db, "notes"), {
+                const commonData = {
                     subjectId: document.getElementById('subjectId').value,
-                    day: document.getElementById('day').value,
                     title: document.getElementById('title').value,
-                    date: document.getElementById('date').value, 
-                    preview: document.getElementById('preview').value,
                     content: quill.root.innerHTML,
                     createdAt: serverTimestamp()
-                });
-                
+                };
+
+                if(currentMode === 'note') {
+                    // Save to 'notes' collection
+                    await addDoc(collection(db, "notes"), {
+                        ...commonData,
+                        day: document.getElementById('day').value || 'Day ?',
+                        date: document.getElementById('date').value,
+                        preview: document.getElementById('preview').value
+                    });
+                } else {
+                    // Save to 'syllabus' collection
+                    await addDoc(collection(db, "syllabus"), {
+                        ...commonData,
+                        chapNo: parseInt(document.getElementById('chapNo').value) || 99,
+                        ytSearch: document.getElementById('ytSearch').value
+                    });
+                }
+
+                // Success Feedback
                 document.getElementById('success-msg').style.display = 'block';
+                setTimeout(() => document.getElementById('success-msg').style.display = 'none', 3000);
+                
+                // Clear Title & Editor (Keep Date/Subject for speed)
                 document.getElementById('title').value = "";
                 document.getElementById('preview').value = "";
+                document.getElementById('ytSearch').value = "";
                 quill.setContents([]);
-                setTimeout(() => document.getElementById('success-msg').style.display = 'none', 3000);
-            } catch (e) {
-                alert("Error: " + e.message + "\nDid you fix the Firebase Rules?");
+
+            } catch(e) { 
+                alert("Error: " + e.message); 
             }
-            btn.innerText = "Publish Note";
-            btn.disabled = false;
+            
+            btn.disabled = false; 
+            btn.innerText = currentMode === 'note' ? "Publish Note" : "Publish Syllabus Chapter";
         }
     </script>
 </body>
 </html>
+
